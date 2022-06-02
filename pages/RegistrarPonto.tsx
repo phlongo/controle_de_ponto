@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, Image, StyleSheet, Text, View } from 'react-native';
+import { Button, Image, StyleSheet, Text, View, SafeAreaView, ScrollView, } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Ponto, iModalProps } from '../types';
 import { NavigationContainer } from '@react-navigation/native';
@@ -74,8 +74,9 @@ export default function App ({navigation}: any) {
         <StatusBar style='auto' />
         <View>
             <Button
-             onPress={ () => navigation.navigate('Configuracao')}
+             onPress={ () => navigation.navigate('Configuracao',{paramKey: lstPontos,})}
              title="Configurações"
+
             /> 
         </View>
         <View style={styles.header}>
@@ -103,8 +104,10 @@ export default function App ({navigation}: any) {
         <View style={styles.text}>
           <Text>Histórico</Text>
   
-          <View>
+          <View style={styles.container}>
+            <ScrollView style={styles.scrollView}>
             <ListarPonto  lstPonto={lstPontos}/>
+            </ScrollView>
           </View>
         </View>
       </View>
@@ -112,6 +115,7 @@ export default function App ({navigation}: any) {
     );
       
 }
+
 
 const styles = StyleSheet.create({
   botton: {
@@ -122,6 +126,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  scrollView: {
+    backgroundColor: '#C0C0C0',
+    marginHorizontal: 20,
   },
   app: {
     marginHorizontal: 'auto',

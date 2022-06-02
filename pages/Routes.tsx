@@ -12,7 +12,7 @@ function Routes() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Login" component={Login} />
+        
         <Stack.Screen name="RegistroDePonto" component={RegistroDePonto} />
         <Stack.Screen name="Configuracao" component={Configuracao} />
       </Stack.Navigator>
@@ -21,3 +21,5 @@ function Routes() {
 }
 
 export default Routes;
+
+//<Stack.Screen name="Login" component={Login} /> componente para fazer o link com a tela de login
