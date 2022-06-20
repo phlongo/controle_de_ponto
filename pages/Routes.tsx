@@ -12,7 +12,7 @@ function Routes() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        
+    
         <Stack.Screen name="RegistroDePonto" component={RegistroDePonto} />
         <Stack.Screen name="Configuracao" component={Configuracao} />
       </Stack.Navigator>

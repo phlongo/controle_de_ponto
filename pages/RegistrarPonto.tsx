@@ -3,6 +3,9 @@ import { Button, Image, StyleSheet, Text, View, SafeAreaView, ScrollView, } from
 import { useEffect, useState } from 'react';
 import { Ponto, iModalProps } from '../types';
 import { NavigationContainer } from '@react-navigation/native';
+import Firebase from '../firebase';
+import { collection, onSnapshot, addDoc, setDoc} from "firebase/firestore";
+import db from '../firebase';
 
 
 export default function App ({navigation}: any) {
@@ -54,6 +57,27 @@ export default function App ({navigation}: any) {
     );
   }
 
+  const handleNew = async () => {
+      const hora = dtaClock.getHours();
+      const minutos = dtaClock.getMinutes();
+      const segundos = dtaClock.getSeconds();
+      const entrada_saida = lstPontos;
+      const dia = dtaClock.getDay();
+      const mes = dtaClock.getMonth();
+      const ano = dtaClock.getFullYear();
+
+      const collectionRef = collection(db, "pontos");
+      const payload = {hora, minutos, segundos,dia, mes, ano, lstPontos};
+      await addDoc(collectionRef, payload);
+  }
+
+
+  function HorasAdicionais({lstPonto}: iModalProps) {
+ 
+
+  
+  }
+
   function RegistrarPonto() {
     console.log("Salvando ponto!");
     if (blnEntradaSaida) {
@@ -67,8 +91,13 @@ export default function App ({navigation}: any) {
     }
     updateIdPonto(numLastIdPonto+1);
     updateLstPontos(lstPontos);
-  }
 
+   
+  }
+  function Callfunction() {
+    RegistrarPonto();
+    handleNew();
+  }
     return (
       <View style={styles.container}>
         <StatusBar style='auto' />
@@ -97,7 +126,8 @@ export default function App ({navigation}: any) {
         </View>
   
         <Button
-          onPress={RegistrarPonto}
+          onPress={Callfunction}
+          
           title="Registrar ponto"
         />
   
@@ -107,6 +137,7 @@ export default function App ({navigation}: any) {
           <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
             <ListarPonto  lstPonto={lstPontos}/>
+           
             </ScrollView>
           </View>
         </View>

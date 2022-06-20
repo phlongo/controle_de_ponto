@@ -2,10 +2,23 @@ import { StatusBar } from 'expo-status-bar';
 import { Button, Image, StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Ponto, iModalProps } from '../types';
+import { auth } from '../firebase';
 
 export default function Login ({navigation}: any) {
   function Login() {
 
+  }
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const handleSignUp = () => {
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((userCredentials: { user: any; }) => {
+        const user = userCredentials.user;
+        console.log('Registered with:', user.email);
+      })
+      .catch((error: { message: any; }) => alert(error.message))
   }
 
   return (
@@ -16,14 +29,14 @@ export default function Login ({navigation}: any) {
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
-          //value={email}
-          //onChangeText={text => setEmail(text)}
+          value={email}
+          onChangeText={text => setEmail(text)}
           style={styles.input}
         />
         <TextInput
           placeholder="Senha"
-          //value={password}
-          //onChangeText={text => setPassword(text)}
+          value={password}
+          onChangeText={text => setPassword(text)}
           style={styles.input}
           secureTextEntry
         />
@@ -37,7 +50,7 @@ export default function Login ({navigation}: any) {
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          //onPress={handleSignUp}
+          onPress={handleSignUp}
           style={[styles.button, styles.buttonOutline]}
         >
           <Text style={styles.buttonOutlineText}>Registrar</Text>
