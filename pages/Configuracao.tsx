@@ -4,7 +4,7 @@ import { Button, Image, StyleSheet, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Ponto, iModalProps } from '../types';
 import Routes from './Routes';
-import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, query, where, getDocs, onSnapshot, Timestamp, serverTimestamp, orderBy } from "firebase/firestore";
 import db from '../firebase';
 
 export default function Configuracao ({route}: any) {
@@ -17,14 +17,17 @@ export default function Configuracao ({route}: any) {
 
   const [pontos, setPontos] = useState([]);
   console.log(pontos);
-    useEffect(
-      ()=>
+    useEffect( ()=> {
+      const collectionRef = (collection(db, "pontos"));
+      const q= query(collectionRef, orderBy("entrada_saida", "desc"));
   
-    onSnapshot(collection(db, "pontos"), (snapshot) => 
+    const unsub = onSnapshot(q, (snapshot) => 
       setPontos(snapshot.docs.map(doc => doc.data()))
-    ),
-    
-   []);
+    );
+    return unsub;
+      },[]);
+
+   
 
 
     return (
@@ -45,17 +48,16 @@ export default function Configuracao ({route}: any) {
           </View>
         </View>
   
-        <Button
-          onPress={Salvar}
-          title="Dados"
-        />
+        <h2>Historico de Pontos</h2>
+          
+        
         <ul>
         {pontos.map((pontos) => (
           <li>
-             {pontos.dia}/{pontos.mes}/{pontos.ano}   {pontos.hora}-{pontos.minutos}-{pontos.segundos}
-
-
+            {pontos.dia}/{pontos.mes}/{pontos.ano} | {pontos.hora}-{pontos.minutos}-{pontos.segundos}
           </li>
+
+          
         ))}
 
         </ul>
@@ -67,7 +69,7 @@ export default function Configuracao ({route}: any) {
     );
 
   
-    //{pontos.dia}/{pontos.mes}/{pontos.ano}   {pontos.hora}-{pontos.minutos}-{pontos.segundos}
+    //{pontos.dia}/{pontos.mes}/{pontos.ano} | {pontos.hora}-{pontos.minutos}-{pontos.segundos}{pontos.entrada_saida}
 
 
 }

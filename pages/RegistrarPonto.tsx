@@ -29,7 +29,7 @@ export default function App ({navigation}: any) {
 
   function GetLiveClock() {
     console.log('setInterval: ' + dtaClock);
-    return (<Text>{dtaClock.getUTCDate()}/{dtaClock.getUTCMonth()}/{dtaClock.getFullYear()} - {dtaClock.getHours()}:{dtaClock.getMinutes()}:{dtaClock.getSeconds()}</Text>);
+    return (<Text>{dtaClock.getUTCDate()}/{dtaClock.getUTCMonth() + 1}/{dtaClock.getFullYear()} - {dtaClock.getHours()}:{dtaClock.getMinutes()}:{dtaClock.getSeconds()}</Text>);
   }
 
   function LinkComponent(pLink: string) {
@@ -61,13 +61,14 @@ export default function App ({navigation}: any) {
       const hora = dtaClock.getHours();
       const minutos = dtaClock.getMinutes();
       const segundos = dtaClock.getSeconds();
-      const entrada_saida = lstPontos;
-      const dia = dtaClock.getDay();
-      const mes = dtaClock.getMonth();
+      const entrada_saida = dtaClock;
+      //const 
+      const dia = dtaClock.getUTCDate();
+      const mes = dtaClock.getUTCMonth() + 1;
       const ano = dtaClock.getFullYear();
 
       const collectionRef = collection(db, "pontos");
-      const payload = {hora, minutos, segundos,dia, mes, ano, lstPontos};
+      const payload = {hora, minutos, segundos,dia, mes, ano, entrada_saida};
       await addDoc(collectionRef, payload);
   }
 
