@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, Image, StyleSheet, Text, View, SafeAreaView, ScrollView, } from 'react-native';
-import { useEffect, useState } from 'react';
+import { Button, Image, StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { Ponto, iModalProps } from '../types';
 import { NavigationContainer } from '@react-navigation/native';
 import Firebase from '../firebase';
@@ -29,7 +29,7 @@ export default function App ({navigation}: any) {
 
   function GetLiveClock() {
     console.log('setInterval: ' + dtaClock);
-    return (<Text>{dtaClock.getUTCDate()}/{dtaClock.getUTCMonth() + 1}/{dtaClock.getFullYear()} - {dtaClock.getHours()}:{dtaClock.getMinutes()}:{dtaClock.getSeconds()}</Text>);
+    return (<Text style={styles.text}>{dtaClock.getUTCDate()}/{dtaClock.getUTCMonth() + 1}/{dtaClock.getFullYear()} - {dtaClock.getHours()}:{dtaClock.getMinutes()}:{dtaClock.getSeconds()}</Text>);
   }
 
   function LinkComponent(pLink: string) {
@@ -102,12 +102,14 @@ export default function App ({navigation}: any) {
     return (
       <View style={styles.container}>
         <StatusBar style='auto' />
-        <View>
-            <Button
-             onPress={ () => navigation.navigate('Configuracao',{paramKey: lstPontos,})}
-             title="Configurações"
-
-            /> 
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            onPress={ () => navigation.navigate('Configuracao',{paramKey: lstPontos,})}
+            style={styles.botton}
+          >
+            <Text style={styles.buttonText}>Configurações</Text>
+          </TouchableOpacity>
+         
         </View>
         <View style={styles.header}>
           <Image
@@ -118,22 +120,24 @@ export default function App ({navigation}: any) {
           />
   
           <View style={styles.title}>
-            <Text>Marcar Ponto</Text>
+            <Text style={styles.text}>Marcar Ponto</Text>
   
             <Text>
              <GetLiveClock />
             </Text>
           </View>
         </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+              onPress={Callfunction}
+              style={styles.botton}
+            >
+              <Text style={styles.buttonText}>Registrar ponto</Text>
+          </TouchableOpacity>
+        </View>
   
-        <Button
-          onPress={Callfunction}
-          
-          title="Registrar ponto"
-        />
-  
-        <View style={styles.text}>
-          <Text>Histórico</Text>
+        <View>
+          <Text style={styles.text}>Histórico</Text>
   
           <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
@@ -151,7 +155,22 @@ export default function App ({navigation}: any) {
 
 const styles = StyleSheet.create({
   botton: {
-
+    backgroundColor: '#0782F9',
+    width: '100%',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    width: '60%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: '700',
+    fontSize: 16,
   },
   container: {
     flex: 1,
@@ -180,9 +199,8 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   text: {
-    lineHeight: 1.5,
-    fontSize: 1.125,
-    marginVertical: 1,
+    fontWeight: '700',
+    fontSize: 16,
     textAlign: 'center'
   },
   link: {
