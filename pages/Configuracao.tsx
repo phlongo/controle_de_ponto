@@ -15,11 +15,17 @@ export default function Configuracao ({route}: any) {
  
   }
 
+  const [dtaClock, setDtaClock] = useState(new Date(Date.now()));
+  // constante para pegar o mes atual
+  const mesdoponto = dtaClock.getUTCMonth() + 1;
+  
+  //filtro do firestore para pega o mes atual e ordenar por data
   const [pontos, setPontos] = useState([]);
   console.log(pontos);
     useEffect( ()=> {
       const collectionRef = (collection(db, "pontos"));
-      const q= query(collectionRef, orderBy("entrada_saida", "desc"));
+      const q= query(collectionRef, where("mes", "==", mesdoponto ), orderBy("entrada_saida", "desc"));
+      //const q = query(collectionRef,  orderBy("mes", "desc"), where("mes", "==", 5));
   
     const unsub = onSnapshot(q, (snapshot) => 
       setPontos(snapshot.docs.map(doc => doc.data()))
@@ -54,7 +60,7 @@ export default function Configuracao ({route}: any) {
         <ul>
         {pontos.map((pontos) => (
           <li>
-            {pontos.dia}/{pontos.mes}/{pontos.ano} | {pontos.hora}-{pontos.minutos}-{pontos.segundos}
+           Data: {pontos.dia}/{pontos.mes}/{pontos.ano} | Hora: {pontos.hora}-{pontos.minutos}-{pontos.segundos}
           </li>
 
           

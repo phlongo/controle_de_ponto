@@ -4,8 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { Ponto, iModalProps } from '../types';
 import { NavigationContainer } from '@react-navigation/native';
 import Firebase from '../firebase';
-import { collection, onSnapshot, addDoc, setDoc} from "firebase/firestore";
+import { collection, onSnapshot, addDoc, setDoc, query, where, orderBy, limit, doc} from "firebase/firestore";
 import db from '../firebase';
+import { async } from '@firebase/util';
 
 
 export default function App ({navigation}: any) {
@@ -13,6 +14,7 @@ export default function App ({navigation}: any) {
 
   const [numLastIdPonto, updateIdPonto] = useState(1);
   const [lstPontos, updateLstPontos] = useState<Ponto[]>([]);
+
   
    // Por padrão a primeira interação é entrada.
   const [blnEntradaSaida, setEntradaSaida] = useState(true);
@@ -26,6 +28,22 @@ export default function App ({navigation}: any) {
       clearInterval(clockId);
     }
   }, []);
+  const diadoponto = dtaClock.getUTCDate();
+  const mesdoponto = dtaClock.getUTCMonth() + 1;
+  const anodoponto = dtaClock.getFullYear();
+  const [pontos, setPontos] = useState([]);
+  
+  //consulta para pegar os pontos do dia pelo firestore
+  useEffect( ()=> {
+    const collectionRef = (collection(db, "pontos"));
+    const q= query(collectionRef, where("dia", "==", diadoponto ), where("mes","==", mesdoponto), where("ano","==", anodoponto), orderBy("entrada_saida", "desc"));
+    //const q = query(collectionRef,  orderBy("mes", "desc"), where("mes", "==", 5));
+
+  const unsub = onSnapshot(q, (snapshot) => 
+    setPontos(snapshot.docs.map(doc => doc.data()))
+  );
+  return unsub;
+    },[]);
 
   function GetLiveClock() {
     console.log('setInterval: ' + dtaClock);
@@ -58,26 +76,54 @@ export default function App ({navigation}: any) {
   }
 
   const handleNew = async () => {
-      const hora = dtaClock.getHours();
-      const minutos = dtaClock.getMinutes();
-      const segundos = dtaClock.getSeconds();
-      const entrada_saida = dtaClock;
-      //const 
-      const dia = dtaClock.getUTCDate();
-      const mes = dtaClock.getUTCMonth() + 1;
-      const ano = dtaClock.getFullYear();
+    const hora = dtaClock.getHours();
+    const minutos = dtaClock.getMinutes();
+    const segundos = dtaClock.getSeconds();
+    const entrada_saida = dtaClock;
+    //const ultimoponto = setUltimoPonto;
+    const dia = dtaClock.getUTCDate();
+    const mes = dtaClock.getUTCMonth() + 1;
+    const ano = dtaClock.getFullYear();
 
-      const collectionRef = collection(db, "pontos");
-      const payload = {hora, minutos, segundos,dia, mes, ano, entrada_saida};
-      await addDoc(collectionRef, payload);
-  }
-
-
-  function HorasAdicionais({lstPonto}: iModalProps) {
+    const collectionRef = collection(db, "pontos");
+    const payload = {hora, minutos, segundos,dia, mes, ano, entrada_saida};
+    await addDoc(collectionRef, payload);
+}
  
 
+  //consulta para retornar o ultimo dado do dia
+ // const [ultimoponto, setUltimoPonto] = useState({pontovalor: 'banana'});
+
+  //useEffect( ()=> {
+  //  const collectionRef = (collection(db, "pontos"));
+  //  const w= query(collectionRef, where("dia", "==", diadoponto ), where("mes","==", mesdoponto), where("ano","==", anodoponto), orderBy("entrada_saida", "desc"), limit(1));
+    //const q = query(collectionRef,  orderBy("mes", "desc"), where("mes", "==", 5));
+
+  //const unsub2 = onSnapshot(w, (snapshot) => 
+  //  setUltimoPonto(snapshot.docs.map(doc => doc.data()))
+  //);
+  //return unsub2;
+  //  },[]);
   
-  }
+
+  
+  //function RegistrarEntrada_Saida() {
+  //  onSnapshot.docs.map() => {
+  //    if (ultimoponto.valordeentradaesaida == "Entrada") {
+  //      const pontovalorf = "Saida";
+  //      return pontovalorf;
+  //   } else if(ultimoponto.valordeentradaesaida == "Saida"){
+  //     const pontovalorf = "Entrada";
+  //     return pontovalorf;
+  //   } else if (ultimoponto.valordeentradaesaida = false){
+  //       const pontovalorf = "Entrada";
+  //       return pontovalorf;
+  //   }
+  //  }
+    
+  //  return setUltimoPonto;
+  //  }
+  
 
   function RegistrarPonto() {
     console.log("Salvando ponto!");
@@ -97,6 +143,7 @@ export default function App ({navigation}: any) {
   }
   function Callfunction() {
     RegistrarPonto();
+    //RegistrarEntrada_Saida();
     handleNew();
   }
     return (
@@ -104,10 +151,10 @@ export default function App ({navigation}: any) {
         <StatusBar style='auto' />
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            onPress={ () => navigation.navigate('Configuracao',{paramKey: lstPontos,})}
+            onPress={ () => navigation.navigate('Configuracao')}
             style={styles.botton}
           >
-            <Text style={styles.buttonText}>Configurações</Text>
+            <Text style={styles.buttonText}>Historico de Ponto</Text>
           </TouchableOpacity>
          
         </View>
@@ -146,6 +193,16 @@ export default function App ({navigation}: any) {
             </ScrollView>
           </View>
         </View>
+        <ul>
+        {pontos.map((pontos) => (
+          <li>
+           Data: {pontos.dia}/{pontos.mes}/{pontos.ano} | Hora: {pontos.hora}-{pontos.minutos}-{pontos.segundos}
+          </li>
+
+          
+        ))}
+
+        </ul>
       </View>
       
     );
